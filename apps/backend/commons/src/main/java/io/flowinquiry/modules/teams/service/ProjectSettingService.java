@@ -9,9 +9,14 @@ import io.flowinquiry.modules.teams.repository.ProjectRepository;
 import io.flowinquiry.modules.teams.repository.ProjectSettingRepository;
 import io.flowinquiry.modules.teams.service.dto.ProjectSettingDTO;
 import io.flowinquiry.modules.teams.service.mapper.ProjectSettingMapper;
+import io.flowinquiry.modules.teams.domain.Project;
+import io.flowinquiry.modules.usermanagement.service.UserService;
+import io.flowinquiry.modules.usermanagement.service.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +25,10 @@ public class ProjectSettingService {
     private final ProjectSettingRepository projectSettingRepository;
     private final ProjectRepository projectRepository;
     private final ProjectSettingMapper projectSettingMapper;
+    private final TeamService teamService;
+    private final UserService userService;
+
+    private static final String ROLE_MANAGER = "manager";
 
     @Transactional(readOnly = true)
     public ProjectSettingDTO getByProjectId(Long projectId) {
@@ -42,6 +51,8 @@ public class ProjectSettingService {
         if (!projectRepository.existsById(projectId)) {
             throw new ResourceNotFoundException("Project not found");
         }
+
+        validateManagerPermission(projectId);
 
         // Set the project ID in the DTO
         dto.setProjectId(projectId);
@@ -78,4 +89,39 @@ public class ProjectSettingService {
 
         return defaultDto;
     }
+
+    private void validateManagerPermission(Long projectId) {
+
+    UserDTO currentUser = getCurrentUser();
+
+    Project project = getProject(projectId);
+
+    validateManagerRole(
+            currentUser.getId(),
+            project.getTeam().getId()
+    );
+}
+    
+private UserDTO getCurrentUser() {
+    return userService.getUserWithAuthorities()
+            .orElseThrow(() ->
+                    new ResourceNotFoundException("Current user not found"));
+}
+
+private Project getProject(Long projectId) {
+    return projectRepository.findById(projectId)
+            .orElseThrow(() ->
+                    new ResourceNotFoundException("Project not found"));
+}
+
+private void validateManagerRole(Long userId, Long teamId) {
+    String role = teamService.getUserRoleInTeam(userId, teamId);
+
+    if (role == null || !ROLE_MANAGER.equalsIgnoreCase(role)) {
+        throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "Only managers can update settings");
+    }
+}
+
 }
