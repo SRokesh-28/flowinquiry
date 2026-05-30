@@ -4,6 +4,7 @@ import io.flowinquiry.modules.teams.domain.AccessibleType;
 import io.flowinquiry.modules.teams.domain.EstimationUnit;
 import io.flowinquiry.modules.teams.domain.TicketPriority;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,4 +40,6 @@ public class ProjectSettingDTO {
     private Instant modifiedAt;
 
     private AccessibleType accessibleType = AccessibleType.PRIVATE;
+
+    private List<String> workingDays;
 }
