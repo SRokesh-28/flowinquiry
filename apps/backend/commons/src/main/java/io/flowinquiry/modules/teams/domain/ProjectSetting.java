@@ -3,6 +3,7 @@ package io.flowinquiry.modules.teams.domain;
 import io.flowinquiry.tenant.domain.TenantScopedAuditingEntity;
 import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
+import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -56,4 +57,11 @@ public class ProjectSetting extends TenantScopedAuditingEntity<Long> {
     @Type(JsonBinaryType.class)
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> integrationSettings;
+
+    @ElementCollection
+    @CollectionTable(
+            name = "project_setting_working_days",
+            joinColumns = @JoinColumn(name = "project_setting_id"))
+    @Column(name = "working_day")
+    private List<String> workingDays;
 }
