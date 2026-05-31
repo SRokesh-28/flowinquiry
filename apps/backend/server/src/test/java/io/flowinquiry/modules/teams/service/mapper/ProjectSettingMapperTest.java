@@ -10,6 +10,7 @@ import io.flowinquiry.modules.teams.domain.ProjectSetting;
 import io.flowinquiry.modules.teams.domain.TicketPriority;
 import io.flowinquiry.modules.teams.service.dto.ProjectSettingDTO;
 import java.time.Instant;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +35,8 @@ public class ProjectSettingMapperTest {
         integrationSettings.put("key1", "value1");
         integrationSettings.put("key2", 123);
 
+        List<String> workingDays = List.of("MONDAY", "TUESDAY", "WEDNESDAY");
+
         Instant now = Instant.now();
 
         ProjectSetting setting =
@@ -45,6 +48,7 @@ public class ProjectSettingMapperTest {
                         .estimationUnit(EstimationUnit.STORY_POINTS)
                         .enableEstimation(true)
                         .integrationSettings(integrationSettings)
+                        .workingDays(workingDays)
                         .createdBy(10L)
                         .createdAt(now)
                         .modifiedBy(11L)
@@ -66,6 +70,7 @@ public class ProjectSettingMapperTest {
                         assertEquals(
                                 setting.getIntegrationSettings(),
                                 settingDTO.getIntegrationSettings()),
+                () -> assertEquals(setting.getWorkingDays(), settingDTO.getWorkingDays()),
                 () -> assertEquals(setting.getCreatedBy(), settingDTO.getCreatedBy()),
                 () -> assertEquals(setting.getCreatedAt(), settingDTO.getCreatedAt()),
                 () -> assertEquals(setting.getModifiedBy(), settingDTO.getModifiedBy()),
@@ -78,6 +83,7 @@ public class ProjectSettingMapperTest {
         Map<String, Object> integrationSettings = new HashMap<>();
         integrationSettings.put("key1", "value1");
         integrationSettings.put("key2", 123);
+        List<String> workingDays = List.of("MONDAY", "TUESDAY", "WEDNESDAY");
 
         Instant now = Instant.now();
 
@@ -90,6 +96,7 @@ public class ProjectSettingMapperTest {
                         .estimationUnit(EstimationUnit.STORY_POINTS)
                         .enableEstimation(true)
                         .integrationSettings(integrationSettings)
+                        .workingDays(workingDays)
                         .createdBy(10L)
                         .createdAt(now)
                         .modifiedBy(11L)
@@ -111,6 +118,7 @@ public class ProjectSettingMapperTest {
                         assertEquals(
                                 settingDTO.getIntegrationSettings(),
                                 setting.getIntegrationSettings()),
+                () -> assertEquals(settingDTO.getWorkingDays(), setting.getWorkingDays()),
                 () -> assertEquals(settingDTO.getCreatedBy(), setting.getCreatedBy()),
                 () -> assertEquals(settingDTO.getCreatedAt(), setting.getCreatedAt()),
                 () -> assertEquals(settingDTO.getModifiedBy(), setting.getModifiedBy()),
@@ -125,6 +133,8 @@ public class ProjectSettingMapperTest {
         Map<String, Object> originalSettings = new HashMap<>();
         originalSettings.put("key1", "original");
 
+        List<String> originalWorkingDays = List.of("MONDAY", "TUESDAY");
+
         Instant originalTime = Instant.now();
 
         ProjectSetting existingSetting =
@@ -136,6 +146,7 @@ public class ProjectSettingMapperTest {
                         .estimationUnit(EstimationUnit.DAYS)
                         .enableEstimation(false)
                         .integrationSettings(originalSettings)
+                        .workingDays(originalWorkingDays)
                         .createdBy(10L)
                         .createdAt(originalTime)
                         .modifiedBy(10L)
@@ -145,6 +156,9 @@ public class ProjectSettingMapperTest {
         Map<String, Object> updatedSettings = new HashMap<>();
         updatedSettings.put("key1", "updated");
         updatedSettings.put("key2", 456);
+
+        List<String> updatedWorkingDays =
+            List.of("MONDAY", "TUESDAY", "WEDNESDAY");
 
         Instant updateTime = originalTime.plusSeconds(7200);
 
@@ -157,6 +171,7 @@ public class ProjectSettingMapperTest {
                         .estimationUnit(EstimationUnit.STORY_POINTS)
                         .enableEstimation(true)
                         .integrationSettings(updatedSettings)
+                        .workingDays(updatedWorkingDays)
                         .createdBy(10L)
                         .createdAt(originalTime)
                         .modifiedBy(11L)
@@ -189,6 +204,9 @@ public class ProjectSettingMapperTest {
                         assertEquals(
                                 updateDTO.getIntegrationSettings(),
                                 existingSetting.getIntegrationSettings()),
+                () -> assertEquals(
+                                 updateDTO.getWorkingDays(),
+                                 existingSetting.getWorkingDays()),
                 () -> assertEquals(updateDTO.getCreatedBy(), existingSetting.getCreatedBy()),
                 () -> assertEquals(updateDTO.getCreatedAt(), existingSetting.getCreatedAt()),
                 () -> assertEquals(updateDTO.getModifiedBy(), existingSetting.getModifiedBy()),
