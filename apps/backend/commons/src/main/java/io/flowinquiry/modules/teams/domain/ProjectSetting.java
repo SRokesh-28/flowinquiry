@@ -60,7 +60,7 @@ public class ProjectSetting extends TenantScopedAuditingEntity<Long> {
 
     @ElementCollection
     @CollectionTable(
-            name = "project_setting_working_days",
+            name = "fw_project_setting_working_days",
             joinColumns = @JoinColumn(name = "project_setting_id"))
     @Column(name = "working_day")
     private List<String> workingDays;
